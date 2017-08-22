@@ -9,10 +9,16 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -27,7 +33,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import com.matt.sudoku.commons.domain.Box;
+import com.matt.sudoku.commons.domain.BoxMap;
 import com.matt.sudoku.commons.domain.UnitManager;
+import com.matt.sudoku.domain.KillerUnit;
 import com.matt.sudoku.ui.event.EventMulticaster;
 import com.matt.sudoku.ui.event.KillerUnitTotalEnteredEvent;
 
@@ -36,6 +45,7 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
 
 	private final EventMulticaster eventMulticaster;
 	private final UnitManager unitManager;
+	private final BoxMap boxMap;
 	private Map<String, JToggleButton> buttons;
 	private JButton quitButton;
 	private JButton saveButton;
@@ -43,16 +53,42 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
 	private JButton loadButton;
 	
 	@Autowired
-    public KillerSudokuMainFrame(EventMulticaster eventMulticaster, UnitManager unitManager) {
+    public KillerSudokuMainFrame(EventMulticaster eventMulticaster, UnitManager unitManager, BoxMap boxMap) {
 		this.eventMulticaster = eventMulticaster;
 		this.unitManager = unitManager;
+		this.boxMap = boxMap;
         initUI();
     }
 
     private void initUI() {
 
         loadButton = new JButton("Load");
+        loadButton.addActionListener((ActionEvent e) -> {
+        	try {
+        		FileInputStream streamIn = new FileInputStream("output.ser");
+        		ObjectInputStream objectinputstream = new ObjectInputStream(streamIn);
+        	    Set<KillerUnit> killerUnits = (Set<KillerUnit>)objectinputstream.readObject();
+        	    streamIn.close();
+        	    for (KillerUnit killerUnit : killerUnits) {
+    				eventMulticaster.publishKillerUnitEntered(loadButton, TODO Box list, killerUnit.getTotal());
+        	    	
+        	    }
+        	} catch (ClassNotFoundException | IOException ex) {
+        		throw new RuntimeException(ex);
+			}
+        });
         saveButton = new JButton("Save");
+        saveButton.addActionListener((ActionEvent e) -> {
+        	try {
+	        	FileOutputStream fout = new FileOutputStream("output.ser");
+	        	ObjectOutputStream oos = new ObjectOutputStream(fout);
+	        	Set<KillerUnit> killerUnits = unitManager.getUnits(KillerUnit.class);
+	        	oos.writeObject(killerUnits);
+	        	fout.close();
+        	} catch (IOException ex) {
+        		throw new RuntimeException(ex);
+        	}
+        });
         solveButton = new JButton("Solve");
         quitButton = new JButton("Quit");
 
@@ -61,9 +97,9 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
         });
 
         buttons = new HashMap<>();
-        IntStream.range('A', 'I'+1).forEach(c ->
-        	IntStream.range(1, 10).forEach(r -> {
-            	String key = String.format("%s%s", r, (char)c);
+        IntStream.range('A', 'I'+1).forEach(r ->
+        	IntStream.range(1, 10).forEach(c -> {
+            	String key = String.format("%s%s", (char)r, c);
         		buttons.put(key, new JToggleButton(key ) );
         	})
         );
@@ -120,8 +156,8 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
 		        JPanel subPanel = new JPanel();
 		        subPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 		        subPanel.setLayout(new GridLayout(3, 3));
-		        for (char ri=(char)('1'+ro);ri<='3'+ro;ri++) {
-		        	for (char ci=(char)('A'+co);ci<='C'+co;ci++) {
+		        for (char ri=(char)('A'+ro);ri<='C'+ro;ri++) {
+		        	for (char ci=(char)('1'+co);ci<='3'+co;ci++) {
 		        		String key = String.format("%s%s", ri, ci);
 		        		subPanel.add(cellButtonMap.get(key));
 		        	}
@@ -142,6 +178,11 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
 		thisUnitMap.values().stream().forEach(b -> b.setText(""));
 		String topLeftButtonKey = thisUnitMap.keySet().stream().min((s1, s2) -> s1.compareTo(s2)).get();
 		thisUnitMap.get(topLeftButtonKey).setText(String.valueOf(event.getKillerUnitTotal()));
+		
+		Box[] boxArray = boxMap.getBoxArray(thisUnitMap.keySet().stream().toArray(String[]::new));
+		KillerUnit killerUnit = new KillerUnit(boxArray, event.getKillerUnitTotal());
+		
+		unitManager.addUnit(killerUnit);
 	}
 
 	private static boolean isAboveInMap(String key, Map<String, JToggleButton> thisUnitMap) {
