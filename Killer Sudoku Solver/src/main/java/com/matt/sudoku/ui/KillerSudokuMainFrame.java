@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import com.matt.sudoku.commons.domain.UnitManager;
 import com.matt.sudoku.ui.event.EventMulticaster;
 import com.matt.sudoku.ui.event.KillerUnitTotalEnteredEvent;
 
@@ -33,17 +35,26 @@ import com.matt.sudoku.ui.event.KillerUnitTotalEnteredEvent;
 public class KillerSudokuMainFrame extends JFrame implements ApplicationListener<KillerUnitTotalEnteredEvent> {
 
 	private final EventMulticaster eventMulticaster;
+	private final UnitManager unitManager;
 	private Map<String, JToggleButton> buttons;
+	private JButton quitButton;
+	private JButton saveButton;
+	private JButton solveButton;
+	private JButton loadButton;
 	
 	@Autowired
-    public KillerSudokuMainFrame(EventMulticaster eventMulticaster) {
+    public KillerSudokuMainFrame(EventMulticaster eventMulticaster, UnitManager unitManager) {
 		this.eventMulticaster = eventMulticaster;
+		this.unitManager = unitManager;
         initUI();
     }
 
     private void initUI() {
 
-        JButton quitButton = new JButton("Quit");
+        loadButton = new JButton("Load");
+        saveButton = new JButton("Save");
+        solveButton = new JButton("Solve");
+        quitButton = new JButton("Quit");
 
         quitButton.addActionListener((ActionEvent event) -> {
             System.exit(0);
@@ -57,7 +68,7 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
         	})
         );
         
-        createLayout(quitButton, buttons);
+        createLayout(loadButton, saveButton, solveButton, quitButton, buttons);
 
         setTitle("Quit button");
         setSize(900, 900);
@@ -65,7 +76,7 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    private void createLayout(JButton quit, Map<String, JToggleButton> cellButtonMap) {
+    private void createLayout(JButton load, JButton save, JButton solve, JButton quit, Map<String, JToggleButton> cellButtonMap) {
 
         Container pane = getContentPane();
         pane.setLayout(new BorderLayout());
@@ -95,6 +106,9 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
         
         JToolBar jToolBar = new JToolBar();
         pane.add(jToolBar, BorderLayout.PAGE_START);
+        jToolBar.add(load);
+        jToolBar.add(save);
+        jToolBar.add(solve);
         jToolBar.add(quit);
         
         JPanel main = new JPanel();
