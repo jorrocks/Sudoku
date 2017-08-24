@@ -1,6 +1,6 @@
 package com.matt.sudoku.ui.event;
 
-import javax.swing.JToggleButton;
+import java.util.Set;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -16,7 +16,7 @@ public class EventMulticaster implements ApplicationEventPublisherAware {
 		this.applicationEventPublisher = applicationEventPublisher;
 	}
 
-	public void publishKillerUnitEntered(JToggleButton jToggleButton, int total) {
-		applicationEventPublisher.publishEvent(new KillerUnitTotalEnteredEvent(jToggleButton, total));
+	public void publishKillerUnitEntered(Object source, Set<String> boxCoords, int total) {
+		applicationEventPublisher.publishEvent(new KillerUnitTotalEnteredEvent(source, boxCoords, total));
 	}
 }

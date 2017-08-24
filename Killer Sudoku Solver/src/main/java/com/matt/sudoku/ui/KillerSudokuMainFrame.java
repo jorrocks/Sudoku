@@ -4,21 +4,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,6 +24,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.border.Border;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -39,6 +40,8 @@ import com.matt.sudoku.commons.domain.UnitManager;
 import com.matt.sudoku.domain.KillerUnit;
 import com.matt.sudoku.ui.event.EventMulticaster;
 import com.matt.sudoku.ui.event.KillerUnitTotalEnteredEvent;
+import com.matt.sudoku.xml.XmlKillerUnit;
+import com.matt.sudoku.xml.XmlKillerUnitContainer;
 
 @Component
 public class KillerSudokuMainFrame extends JFrame implements ApplicationListener<KillerUnitTotalEnteredEvent> {
@@ -46,6 +49,8 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
 	private final EventMulticaster eventMulticaster;
 	private final UnitManager unitManager;
 	private final BoxMap boxMap;
+	private final Function<KillerUnit, XmlKillerUnit> xmlToKillerUnitTransformer;
+	private final Function<XmlKillerUnit, KillerUnit> killerToXmlUnitTransformer;
 	private Map<String, JToggleButton> buttons;
 	private JButton quitButton;
 	private JButton saveButton;
@@ -53,10 +58,14 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
 	private JButton loadButton;
 	
 	@Autowired
-    public KillerSudokuMainFrame(EventMulticaster eventMulticaster, UnitManager unitManager, BoxMap boxMap) {
+    public KillerSudokuMainFrame(EventMulticaster eventMulticaster, UnitManager unitManager, BoxMap boxMap, 
+    		Function<KillerUnit, XmlKillerUnit> xmlToKillerUnitTransformer,
+    		Function<XmlKillerUnit, KillerUnit> killerToXmlUnitTransformer) {
 		this.eventMulticaster = eventMulticaster;
 		this.unitManager = unitManager;
 		this.boxMap = boxMap;
+		this.xmlToKillerUnitTransformer = xmlToKillerUnitTransformer;
+		this.killerToXmlUnitTransformer = killerToXmlUnitTransformer;
         initUI();
     }
 
@@ -65,27 +74,38 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
         loadButton = new JButton("Load");
         loadButton.addActionListener((ActionEvent e) -> {
         	try {
-        		FileInputStream streamIn = new FileInputStream("output.ser");
-        		ObjectInputStream objectinputstream = new ObjectInputStream(streamIn);
-        	    Set<KillerUnit> killerUnits = (Set<KillerUnit>)objectinputstream.readObject();
-        	    streamIn.close();
-        	    for (KillerUnit killerUnit : killerUnits) {
-    				eventMulticaster.publishKillerUnitEntered(loadButton, TODO Box list, killerUnit.getTotal());
-        	    	
+        		File file = new File("killerSudoku.xml");
+        		JAXBContext jaxbContext = JAXBContext.newInstance(XmlKillerUnitContainer.class);
+
+        		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        		XmlKillerUnitContainer killerUnitContainer = (XmlKillerUnitContainer) jaxbUnmarshaller.unmarshal(file);
+        	    
+        	    for (KillerUnit killerUnit : killerUnitContainer.getUnits().stream().map(killerToXmlUnitTransformer).collect(Collectors.toList())) {
+        	    	Set<String> boxCoordSet = killerUnit.boxes().stream().map(b -> b.toString()).collect(Collectors.toSet());
+    				eventMulticaster.publishKillerUnitEntered(loadButton, boxCoordSet, killerUnit.getTotal());
         	    }
-        	} catch (ClassNotFoundException | IOException ex) {
+        	} catch (JAXBException ex) {
         		throw new RuntimeException(ex);
 			}
         });
         saveButton = new JButton("Save");
         saveButton.addActionListener((ActionEvent e) -> {
         	try {
-	        	FileOutputStream fout = new FileOutputStream("output.ser");
-	        	ObjectOutputStream oos = new ObjectOutputStream(fout);
-	        	Set<KillerUnit> killerUnits = unitManager.getUnits(KillerUnit.class);
-	        	oos.writeObject(killerUnits);
-	        	fout.close();
-        	} catch (IOException ex) {
+        		XmlKillerUnitContainer killerUnitContainer = new XmlKillerUnitContainer();
+        		Set<XmlKillerUnit> xmlUnits = unitManager.getUnits(KillerUnit.class).stream().map(xmlToKillerUnitTransformer).collect(Collectors.toSet());
+				killerUnitContainer.setUnits(xmlUnits);
+        		
+        		File file = new File("killerSudoku.xml");
+        		JAXBContext jaxbContext = JAXBContext.newInstance(XmlKillerUnitContainer.class);
+        		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+        		// output pretty printed
+        		jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        		jaxbMarshaller.marshal(killerUnitContainer, file);
+        		jaxbMarshaller.marshal(killerUnitContainer, System.out);
+        		
+        	} catch (JAXBException ex) {
         		throw new RuntimeException(ex);
         	}
         });
@@ -129,8 +149,14 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
 								.filter(c -> c >= '0' && c <= '9')
 								.map(c -> String.valueOf(c)).collect(Collectors.joining());
 						keyStack.clear();
+						
+						Set<String> coords = buttons.entrySet().stream()
+								.filter(es -> es.getValue().isEnabled() && es.getValue().isSelected())
+								.map(es -> es.getKey())
+								.collect(Collectors.toSet());
+						
 						if (totalStr.isEmpty() == false) {
-							eventMulticaster.publishKillerUnitEntered((JToggleButton) e.getSource(), Integer.parseInt(totalStr));
+							eventMulticaster.publishKillerUnitEntered(e.getSource(), coords, Integer.parseInt(totalStr));
 						}
 					} else {
 						keyStack.add(e.getKeyChar());
@@ -169,20 +195,36 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
 
 	@Override
 	public void onApplicationEvent(KillerUnitTotalEnteredEvent event) {
-		Map<String, JToggleButton> thisUnitMap = buttons.entrySet().stream()
-				.filter(e -> e.getValue().isEnabled() && e.getValue().isSelected())
+		// create a reduced map (only those selected) of the buttons keyed by coordinates
+		Map<String, JToggleButton> selectedButtonMapByCoord = buttons.entrySet().stream()
+				.filter(e -> event.getBoxCoordinates().contains(e.getKey()))
 				.collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-		thisUnitMap.entrySet().stream().forEach(e -> e.getValue().setBorder(DashedBorder.createDashedBorder(Color.darkGray, 2, 2, 2, false, 
-				isAboveInMap(e.getKey(), thisUnitMap), isBelowInMap(e.getKey(), thisUnitMap), isLeftInMap(e.getKey(), thisUnitMap), isRightInMap(e.getKey(), thisUnitMap))));
-		thisUnitMap.values().stream().forEach(b -> b.setEnabled(false));
-		thisUnitMap.values().stream().forEach(b -> b.setText(""));
-		String topLeftButtonKey = thisUnitMap.keySet().stream().min((s1, s2) -> s1.compareTo(s2)).get();
-		thisUnitMap.get(topLeftButtonKey).setText(String.valueOf(event.getKillerUnitTotal()));
+		// change the button cell borders to a killer dashed border
+		selectedButtonMapByCoord.entrySet().stream()
+				.forEach(e -> e.getValue().setBorder(createBorder(selectedButtonMapByCoord, e.getKey())));
+		// set selected.
+		selectedButtonMapByCoord.values().stream().forEach(b -> b.setSelected(true));
+		// disable the buttons
+		selectedButtonMapByCoord.values().stream().forEach(b -> b.setEnabled(false));
+		// clear the text
+		selectedButtonMapByCoord.values().stream().forEach(b -> b.setText(""));
+		// write the total in the top left button.
+		String topLeftButtonKey = selectedButtonMapByCoord.keySet().stream().min((s1, s2) -> s1.compareTo(s2)).get();
+		selectedButtonMapByCoord.get(topLeftButtonKey).setText(String.valueOf(event.getKillerUnitTotal()));
 		
-		Box[] boxArray = boxMap.getBoxArray(thisUnitMap.keySet().stream().toArray(String[]::new));
+		Box[] boxArray = boxMap.getBoxArray(selectedButtonMapByCoord.keySet().stream().toArray(String[]::new));
 		KillerUnit killerUnit = new KillerUnit(boxArray, event.getKillerUnitTotal());
 		
 		unitManager.addUnit(killerUnit);
+	}
+
+	private Border createBorder(Map<String, JToggleButton> selectedButtonMapByCoord, String coord) {
+		Border border = DashedBorder.createDashedBorder(Color.darkGray, 2, 2, 2, false, 
+				isAboveInMap(coord, selectedButtonMapByCoord), 
+				isBelowInMap(coord, selectedButtonMapByCoord), 
+				isLeftInMap(coord, selectedButtonMapByCoord), 
+				isRightInMap(coord, selectedButtonMapByCoord));
+		return border;
 	}
 
 	private static boolean isAboveInMap(String key, Map<String, JToggleButton> thisUnitMap) {
