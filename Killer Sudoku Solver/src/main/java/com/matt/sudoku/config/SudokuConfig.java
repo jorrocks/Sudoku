@@ -15,7 +15,6 @@ import com.matt.sudoku.commons.domain.Unit;
 import com.matt.sudoku.commons.print.GridPrinter;
 import com.matt.sudoku.commons.print.LargeGridPrinter;
 
-@Profile("Sudoku")
 @Configuration
 public class SudokuConfig extends AbstractSudokuConfig {
 

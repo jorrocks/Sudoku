@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xmlKillerUnitContainer>
+    <units total="7">
+        <boxes coordinates="I7"/>
+        <boxes coordinates="I6"/>
+    </units>
+    <units total="10">
+        <boxes coordinates="B6"/>
+        <boxes coordinates="B7"/>
+    </units>
+    <units total="9">
+        <boxes coordinates="C4"/>
+        <boxes coordinates="D4"/>
+    </units>
+    <units total="11">
+        <boxes coordinates="H3"/>
+        <boxes coordinates="H4"/>
+    </units>
+    <units total="11">
+        <boxes coordinates="F2"/>
+        <boxes coordinates="F3"/>
+    </units>
+    <units total="9">
+        <boxes coordinates="F7"/>
+        <boxes coordinates="F8"/>
+    </units>
+    <units total="15">
+        <boxes coordinates="I8"/>
+        <boxes coordinates="I9"/>
+    </units>
+    <units total="7">
+        <boxes coordinates="C3"/>
+        <boxes coordinates="B3"/>
+    </units>
+    <units total="11">
+        <boxes coordinates="D3"/>
+        <boxes coordinates="D2"/>
+    </units>
+    <units total="5">
+        <boxes coordinates="C2"/>
+        <boxes coordinates="C1"/>
+    </units>
+    <units total="10">
+        <boxes coordinates="H6"/>
+        <boxes coordinates="H5"/>
+        <boxes coordinates="I5"/>
+    </units>
+    <units total="7">
+        <boxes coordinates="I4"/>
+        <boxes coordinates="I3"/>
+    </units>
+    <units total="14">
+        <boxes coordinates="C7"/>
+        <boxes coordinates="C8"/>
+    </units>
+    <units total="12">
+        <boxes coordinates="G1"/>
+        <boxes coordinates="F1"/>
+    </units>
+    <units total="15">
+        <boxes coordinates="H9"/>
+        <boxes coordinates="H8"/>
+    </units>
+    <units total="9">
+        <boxes coordinates="F9"/>
+        <boxes coordinates="E9"/>
+    </units>
+    <units total="5">
+        <boxes coordinates="B9"/>
+        <boxes coordinates="A9"/>
+    </units>
+    <units total="14">
+        <boxes coordinates="B8"/>
+        <boxes coordinates="A8"/>
+    </units>
+    <units total="10">
+        <boxes coordinates="I2"/>
+        <boxes coordinates="H2"/>
+    </units>
+    <units total="3">
+        <boxes coordinates="F5"/>
+        <boxes coordinates="G5"/>
+    </units>
+    <units total="10">
+        <boxes coordinates="A7"/>
+        <boxes coordinates="A6"/>
+    </units>
+    <units total="10">
+        <boxes coordinates="I1"/>
+        <boxes coordinates="H1"/>
+    </units>
+    <units total="13">
+        <boxes coordinates="F6"/>
+        <boxes coordinates="G6"/>
+    </units>
+    <units total="13">
+        <boxes coordinates="D1"/>
+        <boxes coordinates="E1"/>
+    </units>
+    <units total="12">
+        <boxes coordinates="A5"/>
+        <boxes coordinates="B5"/>
+        <boxes coordinates="B4"/>
+    </units>
+    <units total="10">
+        <boxes coordinates="A1"/>
+        <boxes coordinates="A2"/>
+    </units>
+    <units total="17">
+        <boxes coordinates="F4"/>
+        <boxes coordinates="G4"/>
+    </units>
+    <units total="10">
+        <boxes coordinates="A4"/>
+        <boxes coordinates="A3"/>
+    </units>
+    <units total="6">
+        <boxes coordinates="C6"/>
+        <boxes coordinates="D6"/>
+    </units>
+    <units total="13">
+        <boxes coordinates="G3"/>
+        <boxes coordinates="G2"/>
+    </units>
+    <units total="9">
+        <boxes coordinates="G7"/>
+        <boxes coordinates="H7"/>
+    </units>
+    <units total="16">
+        <boxes coordinates="E5"/>
+        <boxes coordinates="E6"/>
+        <boxes coordinates="E4"/>
+    </units>
+    <units total="11">
+        <boxes coordinates="D8"/>
+        <boxes coordinates="D7"/>
+    </units>
+    <units total="5">
+        <boxes coordinates="G8"/>
+        <boxes coordinates="G9"/>
+    </units>
+    <units total="16">
+        <boxes coordinates="D5"/>
+        <boxes coordinates="C5"/>
+    </units>
+    <units total="3">
+        <boxes coordinates="E3"/>
+        <boxes coordinates="E2"/>
+    </units>
+    <units total="11">
+        <boxes coordinates="E8"/>
+        <boxes coordinates="E7"/>
+    </units>
+    <units total="14">
+        <boxes coordinates="B1"/>
+        <boxes coordinates="B2"/>
+    </units>
+    <units total="12">
+        <boxes coordinates="D9"/>
+        <boxes coordinates="C9"/>
+    </units>
+</xmlKillerUnitContainer>
