@@ -7,9 +7,11 @@ import java.awt.GridLayout;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,72 +48,47 @@ import com.matt.sudoku.xml.XmlKillerUnitContainer;
 @Component
 public class KillerSudokuMainFrame extends JFrame implements ApplicationListener<KillerUnitTotalEnteredEvent> {
 
+	private static final long serialVersionUID = -3621830884275638782L;
+	
 	private final EventMulticaster eventMulticaster;
 	private final UnitManager unitManager;
 	private final BoxMap boxMap;
-	private final Function<KillerUnit, XmlKillerUnit> xmlToKillerUnitTransformer;
-	private final Function<XmlKillerUnit, KillerUnit> killerToXmlUnitTransformer;
+	private final ActionListener loadActionListener;
+	private final ActionListener saveActionListener;
+	private final ActionListener solveActionListener;
+	private final ActionListener printActionListener;
 	private Map<String, JToggleButton> buttons;
 	private JButton quitButton;
 	private JButton saveButton;
 	private JButton solveButton;
 	private JButton loadButton;
+	private JButton printButton;
 	
 	@Autowired
     public KillerSudokuMainFrame(EventMulticaster eventMulticaster, UnitManager unitManager, BoxMap boxMap, 
-    		Function<KillerUnit, XmlKillerUnit> xmlToKillerUnitTransformer,
-    		Function<XmlKillerUnit, KillerUnit> killerToXmlUnitTransformer) {
+    		ActionListener loadActionListener, ActionListener saveActionListener, 
+    		ActionListener solveActionListener, ActionListener printActionListener) {
 		this.eventMulticaster = eventMulticaster;
 		this.unitManager = unitManager;
 		this.boxMap = boxMap;
-		this.xmlToKillerUnitTransformer = xmlToKillerUnitTransformer;
-		this.killerToXmlUnitTransformer = killerToXmlUnitTransformer;
+		this.loadActionListener = loadActionListener;
+		this.saveActionListener = saveActionListener;
+		this.solveActionListener = solveActionListener;
+		this.printActionListener = printActionListener;
         initUI();
     }
 
     private void initUI() {
 
         loadButton = new JButton("Load");
-        loadButton.addActionListener((ActionEvent e) -> {
-        	try {
-        		File file = new File("killerSudoku.xml");
-        		JAXBContext jaxbContext = JAXBContext.newInstance(XmlKillerUnitContainer.class);
-
-        		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        		XmlKillerUnitContainer killerUnitContainer = (XmlKillerUnitContainer) jaxbUnmarshaller.unmarshal(file);
-        	    
-        	    for (KillerUnit killerUnit : killerUnitContainer.getUnits().stream().map(killerToXmlUnitTransformer).collect(Collectors.toList())) {
-        	    	Set<String> boxCoordSet = killerUnit.boxes().stream().map(b -> b.toString()).collect(Collectors.toSet());
-    				eventMulticaster.publishKillerUnitEntered(loadButton, boxCoordSet, killerUnit.getTotal());
-        	    }
-        	} catch (JAXBException ex) {
-        		throw new RuntimeException(ex);
-			}
-        });
+        loadButton.addActionListener(loadActionListener);
         saveButton = new JButton("Save");
-        saveButton.addActionListener((ActionEvent e) -> {
-        	try {
-        		XmlKillerUnitContainer killerUnitContainer = new XmlKillerUnitContainer();
-        		Set<XmlKillerUnit> xmlUnits = unitManager.getUnits(KillerUnit.class).stream().map(xmlToKillerUnitTransformer).collect(Collectors.toSet());
-				killerUnitContainer.setUnits(xmlUnits);
-        		
-        		File file = new File("killerSudoku.xml");
-        		JAXBContext jaxbContext = JAXBContext.newInstance(XmlKillerUnitContainer.class);
-        		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-
-        		// output pretty printed
-        		jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-        		jaxbMarshaller.marshal(killerUnitContainer, file);
-        		jaxbMarshaller.marshal(killerUnitContainer, System.out);
-        		
-        	} catch (JAXBException ex) {
-        		throw new RuntimeException(ex);
-        	}
-        });
+        saveButton.addActionListener(saveActionListener);
         solveButton = new JButton("Solve");
+        solveButton.addActionListener(solveActionListener);
+        printButton = new JButton("Print");
+        printButton.addActionListener(printActionListener);
         quitButton = new JButton("Quit");
-
         quitButton.addActionListener((ActionEvent event) -> {
             System.exit(0);
         });
@@ -124,15 +101,15 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
         	})
         );
         
-        createLayout(loadButton, saveButton, solveButton, quitButton, buttons);
+        createLayout(Arrays.asList(loadButton, saveButton, solveButton, printButton, quitButton), buttons);
 
-        setTitle("Quit button");
+        setTitle("Killer Sudoku solver");
         setSize(900, 900);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    private void createLayout(JButton load, JButton save, JButton solve, JButton quit, Map<String, JToggleButton> cellButtonMap) {
+    private void createLayout(List<JButton> menuButtons, Map<String, JToggleButton> cellButtonMap) {
 
         Container pane = getContentPane();
         pane.setLayout(new BorderLayout());
@@ -168,10 +145,7 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
         
         JToolBar jToolBar = new JToolBar();
         pane.add(jToolBar, BorderLayout.PAGE_START);
-        jToolBar.add(load);
-        jToolBar.add(save);
-        jToolBar.add(solve);
-        jToolBar.add(quit);
+        menuButtons.stream().forEach(b -> jToolBar.add(b));
         
         JPanel main = new JPanel();
         main.setLayout(new GridLayout(3, 3));
