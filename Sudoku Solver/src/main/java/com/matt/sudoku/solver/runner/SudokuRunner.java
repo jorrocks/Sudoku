@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.matt.sudoku.commons.domain.Grid;
 import com.matt.sudoku.commons.domain.Unit;
-import com.matt.sudoku.commons.factory.GridFactory;
+import com.matt.sudoku.commons.factory.SudokuGridManager;
 import com.matt.sudoku.commons.strategy.EliminateSolved;
 import com.matt.sudoku.commons.strategy.NakedTwin;
 
@@ -26,7 +26,7 @@ public class SudokuRunner implements CommandLineRunner{
 	private List<Unit> units;
 	
 	@Autowired
-	private GridFactory gridFactory;
+	private SudokuGridManager gridFactory;
 	
 	@Autowired
 	private EliminateSolved eliminateSolvedStrategy;
