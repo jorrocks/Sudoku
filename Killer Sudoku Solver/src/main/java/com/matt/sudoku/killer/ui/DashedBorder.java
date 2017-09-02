@@ -1,4 +1,4 @@
-package com.matt.sudoku.ui;
+package com.matt.sudoku.killer.ui;
 
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;

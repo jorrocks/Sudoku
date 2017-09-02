@@ -1,4 +1,4 @@
-package com.matt.sudoku;
+package com.matt.sudoku.killer;
 
 import java.awt.EventQueue;
 
@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import com.matt.sudoku.ui.KillerSudokuMainFrame;
+import com.matt.sudoku.killer.ui.KillerSudokuMainFrame;
 
 @SpringBootApplication
 public class KillerSudokuApplication {

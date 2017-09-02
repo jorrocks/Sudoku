@@ -1,4 +1,4 @@
-package com.matt.sudoku.ui.event;
+package com.matt.sudoku.killer.ui.event;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

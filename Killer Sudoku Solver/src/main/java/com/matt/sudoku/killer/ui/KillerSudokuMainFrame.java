@@ -1,4 +1,4 @@
-package com.matt.sudoku.ui;
+package com.matt.sudoku.killer.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -39,11 +39,11 @@ import org.springframework.stereotype.Component;
 import com.matt.sudoku.commons.domain.Box;
 import com.matt.sudoku.commons.domain.BoxMap;
 import com.matt.sudoku.commons.domain.UnitManager;
-import com.matt.sudoku.domain.KillerUnit;
-import com.matt.sudoku.ui.event.EventMulticaster;
-import com.matt.sudoku.ui.event.KillerUnitTotalEnteredEvent;
-import com.matt.sudoku.xml.XmlKillerUnit;
-import com.matt.sudoku.xml.XmlKillerUnitContainer;
+import com.matt.sudoku.killer.domain.KillerUnit;
+import com.matt.sudoku.killer.ui.event.EventMulticaster;
+import com.matt.sudoku.killer.ui.event.KillerUnitTotalEnteredEvent;
+import com.matt.sudoku.killer.xml.XmlKillerUnit;
+import com.matt.sudoku.killer.xml.XmlKillerUnitContainer;
 
 @Component
 public class KillerSudokuMainFrame extends JFrame implements ApplicationListener<KillerUnitTotalEnteredEvent> {

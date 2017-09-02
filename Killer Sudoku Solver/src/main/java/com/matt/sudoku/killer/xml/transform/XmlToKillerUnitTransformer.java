@@ -1,4 +1,4 @@
-package com.matt.sudoku.xml.transform;
+package com.matt.sudoku.killer.xml.transform;
 
 import java.util.Set;
 import java.util.function.Function;
@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.matt.sudoku.commons.domain.Box;
-import com.matt.sudoku.domain.KillerUnit;
-import com.matt.sudoku.xml.XmlBox;
-import com.matt.sudoku.xml.XmlKillerUnit;
+import com.matt.sudoku.killer.domain.KillerUnit;
+import com.matt.sudoku.killer.xml.XmlBox;
+import com.matt.sudoku.killer.xml.XmlKillerUnit;
 
 @Component
 public class XmlToKillerUnitTransformer implements Function<KillerUnit, XmlKillerUnit> {
