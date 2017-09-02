@@ -1,4 +1,4 @@
-package com.matt.sudoku.ui.event;
+package com.matt.sudoku.killer.ui.event;
 
 import java.util.Set;
 

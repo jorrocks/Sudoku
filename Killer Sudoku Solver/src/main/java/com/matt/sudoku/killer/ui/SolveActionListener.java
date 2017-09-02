@@ -1,4 +1,4 @@
-package com.matt.sudoku.ui;
+package com.matt.sudoku.killer.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

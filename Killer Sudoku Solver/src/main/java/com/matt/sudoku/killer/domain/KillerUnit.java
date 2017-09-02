@@ -1,4 +1,4 @@
-package com.matt.sudoku.domain;
+package com.matt.sudoku.killer.domain;
 
 import java.io.Serializable;
 

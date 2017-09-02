@@ -1,11 +1,11 @@
-package com.matt.sudoku.xml.transform;
+package com.matt.sudoku.killer.xml.transform;
 
 import java.util.function.Function;
 
 import org.springframework.stereotype.Component;
 
 import com.matt.sudoku.commons.domain.Box;
-import com.matt.sudoku.xml.XmlBox;
+import com.matt.sudoku.killer.xml.XmlBox;
 
 @Component
 public class XmlToKillerBoxTransformer implements Function<Box, XmlBox> {

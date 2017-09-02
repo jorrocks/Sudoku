@@ -1,4 +1,4 @@
-package com.matt.sudoku.config;
+package com.matt.sudoku.killer.config;
 
 import java.util.ArrayList;
 import java.util.List;
