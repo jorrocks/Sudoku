@@ -19,5 +19,10 @@ public class KillerUnit extends CustomUnit implements Serializable {
 		return total;
 	}
 
+	@Override
+	public String toString() {
+		return "KillerUnit [total=" + total + "]";
+	}
+
 
 }
