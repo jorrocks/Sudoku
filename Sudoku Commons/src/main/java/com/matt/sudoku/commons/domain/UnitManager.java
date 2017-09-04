@@ -43,7 +43,7 @@ public class UnitManager implements Serializable {
 		return unitsByType.values().stream().flatMap(Set::stream).collect(Collectors.toSet());
 	}
 	
-	public <U> Set<U> getUnits(Class<U> clazz) {
+	public <U extends Unit> Set<U> getUnits(Class<U> clazz) {
 		Set<Unit> allUnits = unitsByType.get(clazz);
 		return (Set<U>)(Set<?>)allUnits;
 	}

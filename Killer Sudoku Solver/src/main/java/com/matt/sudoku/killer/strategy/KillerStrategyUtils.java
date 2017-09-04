@@ -13,6 +13,7 @@ import com.matt.sudoku.killer.domain.KillerUnit;
 public class KillerStrategyUtils {
 	public List<KillerCombination> getCombinations(KillerUnit killerUnit) {
 		List<SortedSet<Integer>> comboList = findCombinations(killerUnit.getTotal(), killerUnit.boxes().size(), new TreeSet<>(IntStream.rangeClosed(1, 9).boxed().collect(Collectors.toSet())));
+		if (comboList == null) return null;
 		return comboList.stream().map(s->new KillerCombination(killerUnit, s)).collect(Collectors.toList());
 	}
 	
@@ -29,9 +30,10 @@ public class KillerStrategyUtils {
 			List<SortedSet<Integer>> result = new ArrayList<>();
 			for (Integer element : available) {
 				if (element < total) {
-					SortedSet<Integer> tailSet = available.tailSet(element);
 					Integer nextTotal = total - element;
 					Integer nextSize = size - 1;
+					if (nextTotal <= element) break;
+					SortedSet<Integer> tailSet = available.tailSet(element + 1);
 					if (tailSet.size() >= nextSize) {
 						List<SortedSet<Integer>> nextResult = findCombinations(nextTotal, nextSize, tailSet);
 						if (nextResult != null) {

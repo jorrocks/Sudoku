@@ -65,6 +65,22 @@ public class KillerStrategyUtilsTest {
 	}
 	
 	@Test
+	public void testGetCombinations_2Box_invalid_tooBig() {
+		KillerUnit killerUnit = new KillerUnit(boxMap.getBoxArray("A1", "A2"), 18);
+		KillerStrategyUtils utils = new KillerStrategyUtils();
+		List<KillerCombination> combos = utils.getCombinations(killerUnit);
+		Java6Assertions.assertThat(combos).isNull();
+	}
+	
+	@Test
+	public void testGetCombinations_2Box_invalid_tooSmall() {
+		KillerUnit killerUnit = new KillerUnit(boxMap.getBoxArray("A1", "A2"), 2);
+		KillerStrategyUtils utils = new KillerStrategyUtils();
+		List<KillerCombination> combos = utils.getCombinations(killerUnit);
+		Java6Assertions.assertThat(combos).isNull();
+	}
+	
+	@Test
 	public void testGetCombinations_3Box() {
 		KillerUnit killerUnit = new KillerUnit(boxMap.getBoxArray("A1", "A2", "A3"), 16);
 		KillerStrategyUtils utils = new KillerStrategyUtils();
