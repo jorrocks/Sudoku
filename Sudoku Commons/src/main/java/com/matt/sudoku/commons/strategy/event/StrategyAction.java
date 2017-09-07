@@ -7,7 +7,11 @@ public abstract class StrategyAction implements Comparable<StrategyAction> {
 
 	@Override
 	public int compareTo(StrategyAction o) {
-		return Integer.compare(this.getPrecedence(), o.getPrecedence());
+		if (!this.getClass().equals(o.getClass()))
+			return Integer.compare(this.getPrecedence(), o.getPrecedence());
+		else {
+			return Integer.compare(this.hashCode(), o.hashCode());
+		}
 	}
 
 	public abstract void execute(SudokuGridManager gridManager, ActionQueue queue);
