@@ -1,25 +1,32 @@
 package com.matt.sudoku.commons.strategy.event;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.matt.sudoku.commons.domain.Box;
 
 public class StrategyEvent {
-	private final Box box;
-	private final int value;
+	private final Set<Box> boxes;
+	private final Set<Integer> values;
 	private final StrategyEventType type;
 	
 	public StrategyEvent(Box box, int value, StrategyEventType type) {
+		this(Collections.singleton(box), Collections.singleton(value), type);
+	}
+	
+	public StrategyEvent(Set<Box> boxes, Set<Integer> values, StrategyEventType type) {
 		super();
-		this.box = box;
-		this.value = value;
+		this.boxes = boxes;
+		this.values = values;
 		this.type = type;
 	}
 	
-	public Box getBox() {
-		return box;
+	public Set<Box> getBoxes() {
+		return boxes;
 	}
 	
-	public int getValue() {
-		return value;
+	public Set<Integer> getValues() {
+		return values;
 	}
 	
 	public StrategyEventType getType() {
@@ -28,7 +35,7 @@ public class StrategyEvent {
 	
 	@Override
 	public String toString() {
-		return "StrategyEvent [box=" + box + ", value=" + value + ", type=" + type + "]";
+		return "StrategyEvent [box=" + boxes + ", value=" + values + ", type=" + type + "]";
 	}
 	
 }

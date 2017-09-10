@@ -2,6 +2,7 @@ package com.matt.sudoku.killer.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import com.matt.sudoku.commons.domain.UnitManager;
 import com.matt.sudoku.commons.factory.SudokuGridManager;
 import com.matt.sudoku.commons.strategy.event.ActionQueue;
 import com.matt.sudoku.commons.strategy.event.StrategyAction;
+import com.matt.sudoku.commons.strategy.event.StrategyEvent;
 import com.matt.sudoku.killer.domain.KillerUnit;
 import com.matt.sudoku.killer.strategy.event.KillerCombinationAction;
 
@@ -32,11 +34,10 @@ public class SolveActionListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		Set<KillerUnit> killerUnits = unitManager.getUnits(KillerUnit.class);
 		killerUnits.forEach(u->queue.add(new KillerCombinationAction(u)));
-		
-		
+
 		StrategyAction action;
 		while ((action = queue.pop()) != null) {
-			action.execute(gridManager, queue);
+			List<StrategyEvent> events = action.execute(gridManager);
 		}
 	}
 

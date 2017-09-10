@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.matt.sudoku.commons.domain.Unit;
 import com.matt.sudoku.killer.domain.KillerCombination;
 import com.matt.sudoku.killer.domain.KillerUnit;
 
@@ -47,5 +48,9 @@ public class KillerStrategyUtils {
 			}
 			return result.isEmpty() ? null : result;
 		}
+	}
+
+	public List<Unit> findSuperUnits(KillerUnit killerUnit) {
+		throw new RuntimeException("Not impl");
 	}
 }

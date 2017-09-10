@@ -1,5 +1,7 @@
 package com.matt.sudoku.commons.strategy.event;
 
+import java.util.List;
+
 import com.matt.sudoku.commons.factory.SudokuGridManager;
 
 public abstract class StrategyAction implements Comparable<StrategyAction> {
@@ -14,6 +16,6 @@ public abstract class StrategyAction implements Comparable<StrategyAction> {
 		}
 	}
 
-	public abstract void execute(SudokuGridManager gridManager, ActionQueue queue);
+	public abstract List<StrategyEvent> execute(SudokuGridManager gridManager);
 	
 }

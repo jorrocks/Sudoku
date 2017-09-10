@@ -1,5 +1,6 @@
 package com.matt.sudoku.killer.strategy.event;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -8,9 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import com.matt.sudoku.commons.domain.Box;
 import com.matt.sudoku.commons.domain.BoxValue;
+import com.matt.sudoku.commons.domain.Unit;
 import com.matt.sudoku.commons.factory.SudokuGridManager;
 import com.matt.sudoku.commons.strategy.event.ActionQueue;
 import com.matt.sudoku.commons.strategy.event.StrategyAction;
+import com.matt.sudoku.commons.strategy.event.StrategyEvent;
+import com.matt.sudoku.commons.strategy.event.StrategyEventType;
 import com.matt.sudoku.killer.domain.KillerCombination;
 import com.matt.sudoku.killer.domain.KillerUnit;
 import com.matt.sudoku.killer.strategy.KillerStrategyUtils;
@@ -29,26 +33,29 @@ public class KillerCombinationAction extends StrategyAction {
 	}
 
 	@Override
-	public void execute(SudokuGridManager gridManager, ActionQueue queue) {
+	public List<StrategyEvent> execute(SudokuGridManager gridManager) {
 		KillerStrategyUtils utils = new KillerStrategyUtils();
 		List<KillerCombination> combinations = utils.getCombinations(killerUnit);
 		if (combinations == null) {
 			throw new RuntimeException("Unsolvable!!!");
 		} else if (combinations.size() == 1) {
-			// TODO
+			KillerCombination combination = combinations.get(0);
 			// remove all except XXX in the current unit
-			
+			List<StrategyEvent> resultEvents = new ArrayList<>();			
 			for (Box boxInUnit : killerUnit.boxes()) {
 				BoxValue boxValue = gridManager.getGrid().get(boxInUnit);
-				Set<Integer> reduced = boxValue.reduceOthers(combinations.get(0).getValues());
-				reduced.forEach(i -> queue.fireReducedEvent(i, boxInUnit));
+				Set<Integer> reduced = boxValue.reduceOthers(combination.getValues());
+				reduced.forEach(i -> resultEvents.add(new StrategyEvent(boxInUnit, i, StrategyEventType.CLEARED_POSSIBLE)));
 			}
 			
 			// remove all XXX from super set units.
+			resultEvents.add(new StrategyEvent(combination.getKillerUnit().boxes(), combination.getValues(), StrategyEventType.NAKED_TWIN));
+			return resultEvents;
 		} else {
 			// are there any values that are common to all combinations?
 			
 			// are there any values that aren't in any combinations?
+			return new ArrayList<>();
 		}
 	}
 
