@@ -1,14 +1,11 @@
 package com.matt.sudoku.commons.domain;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import com.matt.sudoku.commons.domain.BoxValue;
 
 public class BoxValue {
 	private Set<Integer> values;
@@ -47,11 +44,6 @@ public class BoxValue {
 		values.add(value);
 	}
 	
-	public boolean reduce(Integer... i) {
-		if (isSolved()) return false;
-		return values.removeAll(Arrays.asList(i));
-	}
-	
 	@Override
 	public String toString() {
 		return isSolved() ? String.valueOf(getSolved()) : ".";
@@ -62,12 +54,26 @@ public class BoxValue {
 		values.stream().forEach(sb::append);
 		return sb.toString();
 	}
+	
+	@Deprecated
+	public boolean reduce(Integer... i) {
+		if (isSolved()) return false;
+		return values.removeAll(Arrays.asList(i));
+	}
 
 	public Set<Integer> reduceOthers(Set<Integer> nonReducedValues) {
+		if (isSolved()) return Collections.emptySet();
 		Set<Integer> currentValues = new HashSet<>(values);
 		values.retainAll(nonReducedValues);
 		if (values.isEmpty()) throw new RuntimeException("BoxValue empty.  Unsolvable.");
 		currentValues.removeAll(values);
 		return currentValues;
+	}
+
+	public Set<Integer> reduceValues(Set<Integer> toReduceValues) {
+		if (isSolved()) return Collections.emptySet();
+		Set<Integer> results = toReduceValues.stream().filter(values::contains).collect(Collectors.toSet());
+		values.removeAll(toReduceValues);
+		return results;
 	}
 }

@@ -1,9 +1,8 @@
 package com.matt.sudoku.commons.strategy.event;
 
+import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.springframework.stereotype.Component;
 
 import com.matt.sudoku.commons.domain.Box;
 
@@ -12,6 +11,10 @@ public class ActionQueue {
 	
 	public void add(StrategyAction action) {
 		queue.add(action);
+	}
+
+	public void addAll(Collection<? extends StrategyAction> actions) {
+		queue.addAll(actions);
 	}
 	
 	public StrategyAction pop() {
@@ -29,6 +32,6 @@ public class ActionQueue {
 	public void fireReducedEvent(Integer valueReduced, Box boxInUnit) {
 		// TODO work out which actions need to be created
 		// create them and add to the queue.
-		//throw new RuntimeException("not impl");
+		throw new RuntimeException("not impl");
 	}
 }

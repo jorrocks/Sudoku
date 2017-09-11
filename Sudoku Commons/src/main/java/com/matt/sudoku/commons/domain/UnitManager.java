@@ -74,4 +74,12 @@ public class UnitManager implements Serializable {
 		unitBoxes.remove(box);
 		return unitBoxes;
 	}
+
+	public Set<Unit> getSuperSetUnits(Set<Box> boxes) {
+		Set<Unit> results = new HashSet<>();
+		getUnits(RowUnit.class).stream().filter(u -> u.boxes().containsAll(boxes)).forEach(results::add);
+		getUnits(ColumnUnit.class).stream().filter(u -> u.boxes().containsAll(boxes)).forEach(results::add);
+		getUnits(SquareUnit.class).stream().filter(u -> u.boxes().containsAll(boxes)).forEach(results::add);
+		return results;
+	}
 }
