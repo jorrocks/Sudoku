@@ -1,8 +1,11 @@
 package com.matt.sudoku.killer.strategy.action;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +21,13 @@ import com.matt.sudoku.killer.strategy.KillerStrategyUtils;
 import com.matt.sudoku.killer.strategy.event.ClearedValue;
 import com.matt.sudoku.killer.strategy.event.FoundNakedTwin;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Looks in the Killer Unit to see if there is a unique combination of values that solves it.
  */
+@Slf4j
 public class LookForUniqueCombinationOnUnit extends StrategyAction {
-	private static final Logger log = LoggerFactory.getLogger(LookForUniqueCombinationOnUnit.class);
 	private final KillerUnit killerUnit;
 
 	public LookForUniqueCombinationOnUnit(KillerUnit killerUnit) {
@@ -40,25 +45,26 @@ public class LookForUniqueCombinationOnUnit extends StrategyAction {
 		List<KillerCombination> combinations = utils.getCombinations(killerUnit);
 		if (combinations == null) {
 			throw new RuntimeException("Unsolvable!!!");
-		} else if (combinations.size() == 1) {
-			KillerCombination combination = combinations.get(0);
+		} else {
+			List<Set<Integer>> listOfSets = combinations.stream().map(kc -> kc.getValues()).collect(Collectors.toList());
+			Set<Integer> intersectionValues = listOfSets.stream().skip(1)
+				    .collect(()->new HashSet<>(listOfSets.get(0)), Set::retainAll, Set::retainAll);
+						
 			// remove all except XXX in the current unit
-			List<StrategyEvent> resultEvents = new ArrayList<>();			
+			List<StrategyEvent> resultEvents = new ArrayList<>();
+			
+			if (intersectionValues.isEmpty()) return resultEvents;
+
 			for (Box boxInUnit : killerUnit.boxes()) {
 				BoxValue boxValue = gridManager.getGrid().get(boxInUnit);
-				Set<Integer> reduced = boxValue.reduceOthers(combination.getValues());
+				Set<Integer> reduced = boxValue.reduceOthers(intersectionValues);
 				reduced.forEach(i -> resultEvents.add(new ClearedValue(boxInUnit, i)));
 			}
 			
 			// remove all XXX from super set units.
-			resultEvents.add(new FoundNakedTwin(combination.getKillerUnit().boxes(), combination.getValues()));
-			log.info("Found a Unique Combination at {} of values {}.  Generating {} events.", combination.getKillerUnit().boxes(), combination.getValues(), resultEvents.size());
+			resultEvents.add(new FoundNakedTwin(killerUnit.boxes(), intersectionValues));
+			log.info("Found a Unique Combination at {} of values {}.  Generating {} events.", killerUnit.boxes(), intersectionValues, resultEvents.size());
 			return resultEvents;
-		} else {
-			// are there any values that are common to all combinations?
-			
-			// are there any values that aren't in any combinations?
-			return new ArrayList<>();
 		}
 	}
 

@@ -47,4 +47,9 @@ public class CustomUnit implements Unit, Serializable {
 			return false;
 		return true;
 	}
+
+	@Override
+	public boolean isNeighbour(Unit unit) {
+		return false;
+	}
 }

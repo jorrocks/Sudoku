@@ -33,14 +33,14 @@ public class NakedTwinAction extends StrategyAction {
 		List<StrategyEvent> resultEvents = new ArrayList<>();
 		
 		Grid grid = gridManager.getGrid();
-		// TODO remove other values from the nakedTwin Boxes
+		// remove other values from the nakedTwin Boxes
 		for (Box b : nakedTwinBoxes) {
 			BoxValue bv = grid.get(b);
 			Set<Integer> reduced = bv.reduceOthers(nakedTwinValues);
 			reduced.forEach(i -> resultEvents.add(new ClearedValue(b, i)));
 		}
 		
-		// TODO remove values from the other (non nakedTwin) boxes
+		// remove values from the other (non nakedTwin) boxes
 		Set<Box> otherBoxes = new HashSet<>();
 		otherBoxes.addAll(unit.boxes());
 		otherBoxes.removeAll(nakedTwinBoxes);

@@ -30,4 +30,24 @@ public class SquareUnit extends CustomUnit implements Serializable {
 	public String toString() {
 		return String.format("SquareUnit: %s...", boxes.stream().findFirst().orElseThrow(() -> new RuntimeException("SquareUnit contained no boxes.")));
 	}
+	
+	@Override
+	public boolean isNeighbour(Unit unit) {
+		if (unit == null || !(unit instanceof SquareUnit)) return false;
+		SquareUnit other = (SquareUnit)unit;
+		Box aBox = this.boxes.iterator().next();
+		return other.boxes.stream().anyMatch(ob -> isThreeBoxesAway(aBox, ob));
+	}
+
+	private static boolean isThreeBoxesAway(Box a, Box b) {
+		if (a.getRow().getChar() == b.getRow().getChar() 
+				&& Math.abs(a.getColumn().getChar() - b.getColumn().getChar()) == 3) {
+			return true;
+		}
+		if (a.getColumn().getChar() == b.getColumn().getChar() 
+				&& Math.abs(a.getRow().getChar() - b.getRow().getChar()) == 3) {
+			return true;
+		}
+		return false;
+	}
 }
