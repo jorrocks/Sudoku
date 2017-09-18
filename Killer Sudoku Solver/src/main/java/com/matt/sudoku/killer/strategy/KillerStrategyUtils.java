@@ -53,4 +53,5 @@ public class KillerStrategyUtils {
 	public List<Unit> findSuperUnits(KillerUnit killerUnit) {
 		throw new RuntimeException("Not impl");
 	}
+
 }

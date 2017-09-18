@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,14 @@ public class UnitManager implements Serializable {
 	public <U extends Unit> Set<U> getUnits(Class<U> clazz) {
 		Set<Unit> allUnits = unitsByType.get(clazz);
 		return (Set<U>)(Set<?>)allUnits;
+	}
+	
+	public <U extends Unit> Optional<U> getUnit(char boxRow, char boxColumn, Class<U> unitType) {
+		Set<Unit> allUnits = unitsByType.get(unitType);
+		return allUnits.stream()
+				.filter(u->u.boxes().stream().anyMatch(b->b.getRow().getChar()==boxRow && b.getColumn().getChar()==boxColumn))
+				.map(u -> (U)u)
+				.findFirst();
 	}
 
 	public Set<Box> getIntersectingBoxes(Unit unit, Unit otherUnit) {

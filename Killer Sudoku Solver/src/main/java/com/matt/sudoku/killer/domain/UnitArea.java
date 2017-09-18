@@ -1,21 +1,26 @@
 package com.matt.sudoku.killer.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import com.matt.sudoku.commons.domain.Unit;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 @EqualsAndHashCode
-public class UnitArea<T extends Unit> {
+public class UnitArea {
 	
-	private Set<T> units;
+	private Set<Unit> units;
+	private final Class<? extends Unit> unitType;
+
+	public UnitArea(Class<? extends Unit> unitType) {
+		this.unitType = unitType;
+		units = new HashSet<>();
+	}
 	
-	public boolean add(T unit) {
+	public boolean add(Unit unit) {
 		return units.add(unit);
 	}
 
