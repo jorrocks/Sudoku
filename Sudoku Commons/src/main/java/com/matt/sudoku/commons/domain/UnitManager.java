@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,9 +44,17 @@ public class UnitManager implements Serializable {
 		return unitsByType.values().stream().flatMap(Set::stream).collect(Collectors.toSet());
 	}
 	
-	public <U> Set<U> getUnits(Class<U> clazz) {
+	public <U extends Unit> Set<U> getUnits(Class<U> clazz) {
 		Set<Unit> allUnits = unitsByType.get(clazz);
 		return (Set<U>)(Set<?>)allUnits;
+	}
+	
+	public <U extends Unit> Optional<U> getUnit(char boxRow, char boxColumn, Class<U> unitType) {
+		Set<Unit> allUnits = unitsByType.get(unitType);
+		return allUnits.stream()
+				.filter(u->u.boxes().stream().anyMatch(b->b.getRow().getChar()==boxRow && b.getColumn().getChar()==boxColumn))
+				.map(u -> (U)u)
+				.findFirst();
 	}
 
 	public Set<Box> getIntersectingBoxes(Unit unit, Unit otherUnit) {
@@ -73,5 +82,13 @@ public class UnitManager implements Serializable {
 		unitsThroughBox.stream().map(u -> u.boxes()).reduce(unitBoxes, (s1, s2) -> {s1.addAll(s2); return s1;});
 		unitBoxes.remove(box);
 		return unitBoxes;
+	}
+
+	public Set<Unit> getSuperSetUnits(Set<Box> boxes) {
+		Set<Unit> results = new HashSet<>();
+		getUnits(RowUnit.class).stream().filter(u -> u.boxes().containsAll(boxes)).forEach(results::add);
+		getUnits(ColumnUnit.class).stream().filter(u -> u.boxes().containsAll(boxes)).forEach(results::add);
+		getUnits(SquareUnit.class).stream().filter(u -> u.boxes().containsAll(boxes)).forEach(results::add);
+		return results;
 	}
 }

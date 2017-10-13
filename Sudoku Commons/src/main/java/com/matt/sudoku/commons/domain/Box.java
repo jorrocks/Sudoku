@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+
 public class Box implements Serializable {
 	
 	private static final long serialVersionUID = 6131268185120865771L;
@@ -14,21 +16,15 @@ public class Box implements Serializable {
 		return result;
 	}
 	
+	@Getter
 	private final Column column;
-	
+
+	@Getter
 	private final Row row;
 	
 	public Box(Row r, Column c) {
 		this.row = r;
 		this.column = c;
-	}
-	
-	public Row getRow() {
-		return row;
-	}
-	
-	public Column getColumn() {
-		return column;
 	}
 	
 	@Override

@@ -12,8 +12,13 @@ import com.matt.sudoku.commons.domain.ColumnUnit;
 import com.matt.sudoku.commons.domain.RowUnit;
 import com.matt.sudoku.commons.domain.SquareUnit;
 import com.matt.sudoku.commons.domain.Unit;
+import com.matt.sudoku.commons.domain.UnitManager;
+import com.matt.sudoku.commons.factory.SudokuGridManager;
 import com.matt.sudoku.commons.print.GridPrinter;
 import com.matt.sudoku.commons.print.LargeGridPrinter;
+import com.matt.sudoku.commons.strategy.event.ActionFactory;
+import com.matt.sudoku.commons.strategy.event.ActionQueue;
+import com.matt.sudoku.killer.strategy.action.KillerActionFactory;
 
 @Configuration
 public class SudokuConfig extends AbstractSudokuConfig {
@@ -30,5 +35,20 @@ public class SudokuConfig extends AbstractSudokuConfig {
 	@Bean
 	public GridPrinter gridPrinter() {
 		return new LargeGridPrinter();
+	}
+	
+	@Bean
+	public SudokuGridManager gridManager() {
+		return new SudokuGridManager();
+	}
+	
+	@Bean
+	public ActionQueue actionQueue() {
+		return new ActionQueue();
+	}
+	
+	@Bean
+	public ActionFactory actionFactory(UnitManager unitManager) {
+		return new KillerActionFactory(unitManager);
 	}
 }

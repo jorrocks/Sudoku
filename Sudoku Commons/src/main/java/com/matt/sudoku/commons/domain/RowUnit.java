@@ -3,14 +3,16 @@ package com.matt.sudoku.commons.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+@RequiredArgsConstructor
+@ToString(callSuper=true)
 public class RowUnit implements Unit {
+	@Getter
 	private final Row row;
 	private final BoxMap boxMap;
-	
-	public RowUnit(Row r, BoxMap boxMap) {
-		this.row = r;
-		this.boxMap= boxMap;
-	}
 	
 	public Set<Box> boxes() {
 		Set<Box> result = new HashSet<>();
@@ -18,12 +20,10 @@ public class RowUnit implements Unit {
 		return result;
 	}
 	
-	public Row getRow() {
-		return row;
-	}
-	
 	@Override
-	public String toString() {
-		return String.format("RowUnit: %s", row.toString());
+	public boolean isNeighbour(Unit unit) {
+		if (unit == null || !(unit instanceof RowUnit)) return false;
+		RowUnit other = (RowUnit)unit;
+		return Math.abs(this.row.getChar() - other.row.getChar()) == 1;
 	}
 }

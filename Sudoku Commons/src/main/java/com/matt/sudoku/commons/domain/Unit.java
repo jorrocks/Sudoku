@@ -4,5 +4,5 @@ import java.util.Set;
 
 public interface Unit {
 	public Set<Box> boxes();
-
+	public boolean isNeighbour(Unit unit);
 }
