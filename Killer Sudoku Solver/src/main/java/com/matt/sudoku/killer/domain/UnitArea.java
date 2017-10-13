@@ -8,6 +8,11 @@ import com.matt.sudoku.commons.domain.Unit;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/**
+ * A Group of Units that are adjoining.
+ * @author Matt
+ *
+ */
 @Getter
 @EqualsAndHashCode
 public class UnitArea {
