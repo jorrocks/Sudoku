@@ -7,6 +7,7 @@ import com.matt.sudoku.commons.domain.Unit;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * A Group of Units that are adjoining.
@@ -15,6 +16,7 @@ import lombok.Getter;
  */
 @Getter
 @EqualsAndHashCode
+@ToString
 public class UnitArea {
 	
 	private Set<Unit> units;
@@ -31,5 +33,13 @@ public class UnitArea {
 
 	public int getTotal() {
 		return units.size() * 45;
+	}
+
+	public UnitArea cloneWithUnitIncrement(Unit neighbour) {
+		if (units.contains(neighbour)) throw new RuntimeException("neighbour is already in the Unit area.");
+		UnitArea newUnitArea = new UnitArea(unitType);
+		newUnitArea.units.addAll(units);
+		newUnitArea.add(neighbour);
+		return newUnitArea;
 	}
 }

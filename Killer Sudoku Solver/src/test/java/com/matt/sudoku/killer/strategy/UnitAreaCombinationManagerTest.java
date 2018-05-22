@@ -1,12 +1,15 @@
 package com.matt.sudoku.killer.strategy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.assertj.core.api.Condition;
 import org.assertj.core.api.Java6Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,6 +93,23 @@ public class UnitAreaCombinationManagerTest {
 					  getSquareUnit('D', '7')
 					  );
 	}
+	
+	
+	@Test
+	public void rowUnit_getUnitAreaCombinationsTest() {
+		UnitAreaCombinationManager manager = new UnitAreaCombinationManager(unitManager);
+
+		Set<UnitArea> unitAreas = manager.getUnitAreaCombinations(RowUnit.class);
+		Java6Assertions.assertThat(unitAreas)
+			.isNotNull().hasSize(45)
+			.haveExactly(1, new RowUnitAreaCondition(getRowUnit('A')))
+			.haveExactly(1, new RowUnitAreaCondition(getRowUnit('A'), getRowUnit('B')))
+			.haveExactly(1, new RowUnitAreaCondition(getRowUnit('A'), getRowUnit('B'), getRowUnit('C')))
+			.haveExactly(1, new RowUnitAreaCondition(getRowUnit('G')))
+			.doNotHave(new RowUnitAreaCondition(getRowUnit('A'), getRowUnit('C')))
+			;
+		
+	}
 
 	private RowUnit getRowUnit(char row) {
 		Optional<RowUnit> result = unitManager.getUnit(row, '1', RowUnit.class);
@@ -101,5 +121,19 @@ public class UnitAreaCombinationManagerTest {
 		Optional<SquareUnit> result = unitManager.getUnit(row, column, SquareUnit.class);
 		if (result.isPresent()) return result.get();
 		else throw new RuntimeException(String.format("Bad row, column : %s,%s", row, column));
+	}
+	
+	private class RowUnitAreaCondition extends Condition<UnitArea> {
+		private List<RowUnit> rowUnits;
+		public RowUnitAreaCondition(RowUnit... rowUnits) {
+			this.rowUnits = Arrays.asList(rowUnits);
+		}
+
+		@Override
+		public boolean matches(UnitArea value) {
+			if (value.getUnits().size() != rowUnits.size()) return false;
+			return (value.getUnits().containsAll(rowUnits));
+		}
+		
 	}
 }

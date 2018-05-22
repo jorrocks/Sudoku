@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @RequiredArgsConstructor
-@ToString(callSuper=true)
+@ToString(exclude="boxMap")
 public class RowUnit implements Unit {
 	@Getter
 	private final Row row;

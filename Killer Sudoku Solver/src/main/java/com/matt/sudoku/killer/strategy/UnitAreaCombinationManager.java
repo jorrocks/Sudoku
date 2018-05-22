@@ -19,29 +19,30 @@ public class UnitAreaCombinationManager {
 	
 	public Set<UnitArea> getUnitAreaCombinations(Class<? extends Unit> clazz) {
 		if (!cachedUnitAreaCombinations.containsKey(clazz)) {
-			intialiseUnitAreaCombinations(clazz);
+			initaliseUnitAreaCombinations(clazz);
 		}
 		
 		return cachedUnitAreaCombinations.get(clazz);
 	}
 
-	private void intialiseUnitAreaCombinations(Class<? extends Unit> clazz) {
+	private void initaliseUnitAreaCombinations(Class<? extends Unit> clazz) {
 		Set<? extends Unit> units = unitManager.getUnits(clazz);
-		Set<UnitArea> results = new HashSet<>();
+		Set<UnitArea> allDistinctUnitAreas = new HashSet<>();
 		for (Unit unit : units) {
 			UnitArea unitArea = new UnitArea(clazz);
 			unitArea.add(unit);
-			recurse(results, unitArea);
+			addUnitAreaAndNeighboursRecursive(allDistinctUnitAreas, unitArea);
 		}
+		cachedUnitAreaCombinations.put(clazz,  allDistinctUnitAreas);
 	}
 
-	private void recurse(Set<UnitArea> results, UnitArea unitArea) {
-		if (results.contains(unitArea)) return;
-		results.add(unitArea);
+	private void addUnitAreaAndNeighboursRecursive(Set<UnitArea> allDistinctUnitAreas, UnitArea unitArea) {
+		if (allDistinctUnitAreas.contains(unitArea)) return;
+		allDistinctUnitAreas.add(unitArea);
 		Set<Unit> neighbours = getBoundaryNeighbours(unitArea);
 		for (Unit neighbour : neighbours) {
-			UnitArea newUnitArea = null; //TODO
-			recurse(results, newUnitArea);
+			UnitArea newUnitArea = unitArea.cloneWithUnitIncrement(neighbour);
+			addUnitAreaAndNeighboursRecursive(allDistinctUnitAreas, newUnitArea);
 		}
 	}
 

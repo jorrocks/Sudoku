@@ -26,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -100,6 +101,12 @@ public class KillerSudokuMainFrame extends JFrame implements ApplicationListener
         		buttons.put(key, new JToggleButton(key ) );
         	})
         );
+        JToggleButton a1 = buttons.get(String.format("%s%s", 'A', 1));
+        a1.setBorder(DashedBorder.createDashedBorder(Color.darkGray, 2, 2, 2, false, false, false, false, false));
+        a1.setText("<html>"
+        		+ "<FONT COLOR=RED>Red</FONT><br/> and <FONT COLOR=BLUE>Blue</FONT><br/> Text</html>");
+        a1.setHorizontalAlignment(SwingConstants.LEFT);
+        a1.setVerticalAlignment(SwingConstants.TOP);
         
         createLayout(Arrays.asList(loadButton, saveButton, solveButton, printButton, quitButton), buttons);
 
